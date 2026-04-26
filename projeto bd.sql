@@ -11,3 +11,22 @@ SELECT * FROM user_tb;
 ALTER TABLE user_tb 
 ADD COLUMN email VARCHAR(40),
 ADD COLUMN documento VARCHAR(21);
+
+CREATE TABLE SolicitacoesDoacao (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Instituicao VARCHAR(255),
+    DescricaoNecessidade TEXT,
+    NivelUrgencia VARCHAR(50),
+    PreferenciaContato VARCHAR(100),
+    DataSolicitacao DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+/*DROP TABLE IF EXISTS fazerumadoacao;*/
+CREATE TABLE FazerUmaDoacao (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Instituicao VARCHAR(255),
+    OQueDesejaDoar TEXT,
+    EstadoItem VARCHAR(50),
+    PreferenciaContato VARCHAR(100),
+    DataSolicitacao DATETIME DEFAULT CURRENT_TIMESTAMP
+);
