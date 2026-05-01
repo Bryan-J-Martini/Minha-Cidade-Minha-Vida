@@ -1,6 +1,357 @@
-﻿namespace MCMV.Views.Home
-{
-    public class IndexInstituicao
-    {
-    }
+﻿@{
+    Layout = null;
 }
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="style/assets/favicon.ico" type="image/x-icon">
+  <title>Painel da Instituição</title>
+  <link rel="stylesheet" href="styleInstituicao.css">
+</head>
+<body>
+
+<!-- Topo da Página -->
+
+  <header class="topbar">
+    <div class="logo">
+      <img src="style/assets/logotopo.png" alt="Logo">
+      <span>MINHA CIDADE<br>MINHA VIDA</span>
+    </div>
+
+    <!-- Botão Logout-->
+    <button id="btnLogout" type="button" onclick="redLogin()" class="btn-logout">➜</button>
+    
+  </header>
+
+  <section class="top-section">
+    <div class="top-section-titulo">
+      <h1>Painel da instituição</h1>
+      <p>Gerencie suas atividades</p>
+    </div>
+    <div class="section-decoracao">
+      <div class="figura semi-circulo"></div>
+      <div class="figura circulo-listrado"></div>
+      <div class="figura circulo"></div>
+      <div class="figura gradiente-pontos"></div>
+    </div>
+  </section>
+
+<!-- Conteúdo -->
+
+  <main class="container">
+
+    <div class="grid">
+
+      <!-- Seleção de Campanha -->
+
+      <div class="card selecao-campanha">
+        <p>Selecione a campanha:</p>
+
+        <!-- Seleção de Campanha -->
+        <select id="selectCampanha"></select>
+        
+        <p class="ou">Ou</p>
+        <p>Registre uma nova campanha:</p>
+        <a href="#modal-campanha" class="btn-Modal">Registrar</a>
+      </div>
+
+      <!-- Progresso de Campanha -->
+
+      <div class="card progresso-campanha">
+        <h2>Progresso da Campanha</h2>
+        <p class="subtitulo">Acompanhe o progresso da campanha</p>
+        <div class="progresso-linha">
+          <div class="coluna-total">
+            <p><strong>Total</strong></p>
+            <div class="graficoTotal-container">
+              
+              <!-- Gráfico em anel -->
+              <canvas id="graficoTotal-circular" width="110" height="110"></canvas> 
+
+              <!-- Porcentagem -->
+              <span class="porcentagemTotal-numero" id="total-porcentagem"></span>
+
+            </div>
+            
+            <div class="Legenda">
+              <span><span class="LegendaProgresso Pendente"></span> Pendente</span>
+              <span><span class="LegendaProgresso Concluido"></span> Concluído</span>
+            </div>
+          </div>
+
+
+          <div class="coluna-categorias">
+           <p><strong>Por categoria</strong></p>
+
+            <!-- Lista de Categorias -->
+
+            <div id="listaCategorias">
+           
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid baixo">
+
+      <!-- Historico de Campanhas -->
+       
+      <div class="card historico-campanhas">
+        <h2>Histórico de campanhas</h2>
+        <p class="subtitulo">Registro de campanhas cadastradas</p>
+        <div class="scroll-tabela">
+          <table>
+            <thead>
+              <tr><th>Campanhas</th><th>Início</th><th>Fim</th><th>Status</th></tr>
+            </thead>
+
+            <!-- Tabela das campanhas registradas -->
+            <tbody id="tabelaCampanhas"></tbody>
+
+          </table>
+        </div>
+      </div>
+
+      <!-- Historico de Doações -->
+
+      <div class="card historico-doacoes">
+       <h2>Histórico de doações</h2>
+       <p class="subtitulo">Registro de doações realizadas</p>
+
+
+        <!-- Lista de Doações -->
+        <div class="scroll-doacoes" id="listaDoacoes"></div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- Modal (Registrar Campanha) — 
+   abre:target (href="#modal-campanha") 
+   fecha href="#" -->
+   
+  <div id="modal-campanha" class="modal-overlay">
+    <div class="modal">
+
+      <div class="modal-header">
+        <div>
+          <h2>Registrar nova campanha</h2>
+          <p class="modal-subtitulo">Preencha os dados da campanha</p>
+        </div>
+
+        <!-- Fechar o Modal removendo da URL -->
+        <a href="#" class="modal-fechar" aria-label="Fechar">✕</a>
+      </div>
+
+      <!-- action e method -->
+
+      <form class="modal-corpo" method="post" action="">
+
+        <!-- Identificação da campanha -->
+
+        <div class="modal-secao">
+          <span class="modal-secao-label">Identificação</span>
+          <div class="campo">
+
+            <label for="campNome"> Nome da Campanha <span class="obrigatorio">*</span></label>
+
+            <!-- Nome da campanha -->
+            <input type="text" id="campNome" name="nomeDaCampanha" placeholder="Ex: Campanha do Agasalho 2026" required maxlength="30">
+
+
+          </div>
+        </div>
+
+        <!-- Endereço da Campanha -->
+        <div class="modal-secao">
+          <span class="modal-secao-label">Endereço</span>
+          <div class="modal-grid">
+            <div class="campo largo">
+              <label for="campRua">Rua <span class="obrigatorio">*</span></label>
+
+              <!-- Rua -->
+              <input type="text" id="campRua" name="rua" placeholder="Ex: Rua das Flores" required>
+
+            </div>
+            <div class="campo pequeno">
+              <label for="campCep">CEP <span class="obrigatorio">*</span></label>
+
+              <!-- CEP -->
+              <input type="text" id="campCep" name="cep" placeholder="00000-000" required pattern="\d{5}-?\d{3}" maxlength="9">
+
+
+            </div>
+            <div class="campo pequeno">
+              <label for="NumeroEnderec">Número <span class="obrigatorio">*</span></label>
+
+              <!-- Número do Endereço -->
+              <input type="text" id="NumeroEnderec" name="numeroEnderec" placeholder="Ex: 123" required>
+
+
+            </div>
+            <div class="campo">
+              <label for="Bairro">Bairro <span class="obrigatorio">*</span></label>
+
+              <!-- Bairro -->
+              <input type="text" id="Bairro" name="bairro" placeholder="Ex: Centro" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categoria de itens (doação) -->
+
+        <div class="modal-secao">
+          <span class="modal-secao-label">Categorias de itens <span class="modal-hint">(até 3)</span></span>
+          <div class="categoria-linha">
+            <div class="campo medio">
+              <label>Categoria 1 <span class="obrigatorio">*</span></label>
+
+              <!-- Nome Categoria 1 -->
+              <input type="text" name="cat1_nome" placeholder="Ex: Alimentos" required></div>
+
+            <div class="campo pequeno"><label>Meta</label>
+              
+              <!-- Meta Categoria 1 -->
+              <input type="number" name="cat1_meta" placeholder="100" min="1"></div>
+
+            <div class="campo pequeno"><label>Unidade</label>
+              
+              <!-- Unidade Categoria 1 -->
+              <select name="cat1_unidade"><option>UNI</option><option>KG</option><option>L</option><option>CX</option></select></div>
+          </div>
+
+          <div class="categoria-linha">
+            <div class="campo medio"><label>Categoria 2</label>
+              
+              <!-- Nome Categoria 2 -->
+              <input type="text" name="cat2_nome" placeholder="Ex: Roupas"></div>
+
+            <div class="campo pequeno"><label>Meta</label>
+              
+              <!-- Meta Categoria 2 -->
+              <input type="number" name="cat2_meta" placeholder="100" min="1"></div>
+
+            <div class="campo pequeno"><label>Unidade</label>
+              
+              <!-- Unidade Categoria 2 -->
+              <select name="cat2_unidade"><option>UNI</option><option>KG</option><option>L</option><option>CX</option></select></div>
+          </div>
+
+          <div class="categoria-linha">
+
+            <div class="campo medio"><label>Categoria 3</label>
+              
+              <!-- Nome Categoria 3 -->
+              <input type="text" name="cat3_nome" placeholder="Ex: Limpeza"></div>
+
+            <div class="campo pequeno"><label>Meta</label>
+              
+              <!-- Meta Categoria 3 -->
+              <input type="number" name="cat3_meta" placeholder="100" min="1"></div>
+
+            <div class="campo pequeno"><label>Unidade</label>
+              
+              <!-- Unidade Categoria 3 -->
+              <select name="cat3_unidade"><option>UNI</option><option>KG</option><option>L</option><option>CX</option></select></div>
+
+          </div>
+        </div>
+
+        <div class="modal-secao">
+          <span class="modal-secao-label">Período</span>
+          <div class="modal-grid">
+            <div class="campo">
+              <label for="campInicio">Data de início <span class="obrigatorio">*</span></label>
+
+              <!-- Data de Início-->
+              <input type="date" id="campInicio" name="data_inicio" required>
+
+            </div>
+            <div class="campo">
+              <label for="campFim">Data de finalização <span class="obrigatorio">*</span></label>
+
+              <!-- Data de Fim -->
+              <input type="date" id="campFim" name="data_fim" required>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-secao">
+          <span class="modal-secao-label">Descrição <span class="modal-hint">(opcional)</span></span>
+          <div class="campo">
+
+            <!-- Descrição (opcional)-->
+            <textarea name="descricao" rows="3" placeholder="Descreva o objetivo ou contexto da campanha..."></textarea>
+
+          </div>
+        </div>
+
+        <div class="modal-rodape">
+
+          <!-- Fecha o Modal -->
+          <a href="#" class="btn-cancelar">Cancelar</a>
+
+          <!-- Botão de Registro da Campanha -->
+          <button type="submit" class="btn-verde btn-registrar">Registrar campanha</button>
+
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  /* Gráfico Circular */
+  /* Desenha o gráfico na interface */
+
+  var porcentagem; // Porcentagem que será exibida no gráfico
+  var canvas = document.getElementById('graficoTotal-circular');
+  var ctx = canvas.getContext('2d');
+  var cx = canvas.width / 2, cy = canvas.height / 2;
+  var inicio = -Math.PI / 2;
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 42, 0, 2 * Math.PI);
+  ctx.strokeStyle = '#f3b5b5'; ctx.lineWidth = 14; ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 42, inicio, inicio + (2 * Math.PI * porcentagem / 100));
+  ctx.strokeStyle = '#c62828'; ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.stroke();
+
+  document.getElementById('total-porcentagem').textContent = porcentagem + '%';
+
+  // Esconde Undefined enquanto a var porcentagem não é utilizada 
+  if (porcentagem !== undefined && porcentagem !== null) {
+  document.getElementById('total-porcentagem').textContent = porcentagem + '%';
+ } else {
+  document.getElementById('total-porcentagem').textContent = '';
+ }
+
+  /* Barras de progresso */
+
+  document.querySelectorAll('.barra-preenchimento').forEach(function (b) {
+    b.style.width = b.getAttribute('data-porcentagem') + '%';
+  });
+
+  /* Redirecionamento do logout */
+  window.redLogin = function () { window.location.href = 'login.html'; };
+
+});
+
+</script>
+</body>
+</html>
+
