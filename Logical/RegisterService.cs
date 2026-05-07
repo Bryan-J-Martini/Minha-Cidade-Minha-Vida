@@ -41,7 +41,7 @@ namespace MCMV.Logical
                 {
                     cmd.Parameters.AddWithValue("@user", user);
                     cmd.Parameters.AddWithValue("@pass", senha);
-                    cmd.Parameters.AddWithValue("@mail", email);
+                    cmd.Parameters.AddWithValue("@mail", emailTratado);
                     cmd.Parameters.AddWithValue("@doc", doc);
                     cmd.Parameters.AddWithValue("@verificaInst", instituicaoVerificada);
 
@@ -77,6 +77,32 @@ namespace MCMV.Logical
                 }
             }
             return lista;
+        }
+
+        public bool mudarValidacaoInstituicao(string cnpj)
+        {
+            try
+            {
+                using (var con = _db.GetConnection())
+                {
+                    con.Open();
+                    string query = "UPDATE user_tb SET verificaInst = true WHERE documento = @cnpj";
+
+                    using (var cmd = new MySqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@cnpj", cnpj);
+                        int linhasAfetadas = cmd.ExecuteNonQuery();
+
+                        // Retorna true se pelo menos uma linha foi alterada
+                        return linhasAfetadas > 0;
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("Não foi possivel atualizar");
+                return false;
+            }
         }
     }
 }

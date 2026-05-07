@@ -15,6 +15,7 @@ namespace MCMV
             builder.Services.AddScoped<MCMV.Logical.LoginService>();
             builder.Services.AddScoped<MCMV.Logical.RegisterService>();
             builder.Services.AddScoped<MCMV.Logical.DonationService>();
+            builder.Services.AddScoped<MCMV.Logical.AlteracoesService>();
 
             var app = builder.Build();
 

@@ -645,3 +645,84 @@ td {
   .modal-header, .modal-corpo, .modal-rodape { padding-left: 16px; padding-right: 16px; }
   .campo.pequeno { flex: 1; }
 }
+
+
+/*Upload de Verificação de validade da Instituição
+*/
+.file-input-fake {
+    padding: 9px 12px;
+    border-radius: 9px;
+    border: 1.5px solid #ddd;
+    font-size: 14px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #777;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+    .file-input-fake:hover {
+        border-color: #18b07c;
+    }
+
+    .file-input-fake span {
+        pointer-events: none;
+    }
+
+.verif-toast {
+    margin: 12px 0 12px 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    animation: verifIn .18s ease-out;
+}
+
+    .verif-toast .verif-title {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 16px;
+    }
+
+    .verif-toast .verif-msg {
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .verif-toast.sucesso {
+        background: #e9f7ef;
+        color: #1e7e34;
+        border-color: #b7ebc6;
+    }
+
+    .verif-toast.erro {
+        background: #fdecea;
+        color: #b02a37;
+        border-color: #f5c2c7;
+    }
+
+    .verif-toast.hide {
+        opacity: 0;
+        transition: opacity .4s ease;
+    }
+
+@keyframes verifIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.verif-toast.aviso {
+    background: #fff3cd;
+    color: #856404;
+    border-color: #ffeeba;
+}

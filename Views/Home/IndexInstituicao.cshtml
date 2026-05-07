@@ -1,5 +1,9 @@
 ﻿@{
-    Layout = null;
+    ViewData["Title"] = "Página Inicial - Minha Cidade, Minha Vida";
+
+    // ✅ Não use Peek aqui (senão “vaza” pra outras páginas)
+    var verifMensagem = TempData["VerifMensagem"] as string;
+    var verifTipo = TempData["VerifTipo"] as string;
 }
 
 
@@ -10,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" href="style/assets/favicon.ico" type="image/x-icon">
   <title>Painel da Instituição</title>
-  <link rel="stylesheet" href="styleInstituicao.css">
+    <link rel="stylesheet" href="~/style/indexInstituicao.css">
 </head>
 <body>
 
@@ -18,18 +22,19 @@
 
   <header class="topbar">
     <div class="logo">
-      <img src="style/assets/logotopo.png" alt="Logo">
+            <img src="~/style/assets/logo.png" alt="Logo" style="height: 35px;" />
       <span>MINHA CIDADE<br>MINHA VIDA</span>
     </div>
 
     <!-- Botão Logout-->
-    <button id="btnLogout" type="button" onclick="redLogin()" class="btn-logout">➜</button>
+        <button id="btnLogout" type="button" onclick="redLogin()" class="btn-logout" asp-controller="Home" asp-action="Login">➜</button>
     
   </header>
 
   <section class="top-section">
     <div class="top-section-titulo">
       <h1>Painel da instituição</h1>
+      <a href="#modal-verificacao" class="btn-Modal">Verificação</a>
       <p>Gerencie suas atividades</p>
     </div>
     <div class="section-decoracao">
@@ -133,7 +138,82 @@
     </div>
 
   </main>
+ 
+  <div id="modal-verificacao" class="modal-overlay">
+        <div class="modal">
 
+            <div class="modal-header">
+                <div>
+                    <h2>Valide sua Instituição</h2>
+                    <p class="modal-subtitulo">
+                        Faça a sua verificação para gerar mais confiança
+                    </p>
+                </div>
+                <a href="#" class="modal-fechar">✕</a>
+            </div>
+
+            <!-- ✅ CORPO PADRÃO -->
+            <!-- ✅ A CAIXA FLUTUANTE DENTRO DO MODAL -->
+            @if (!string.IsNullOrEmpty(verifMensagem))
+            {
+                <div id="verifToast" class="verif-toast @(verifTipo ?? "aviso")">
+                    <strong class="verif-title">
+                        
+                    @(verifTipo == "sucesso" ? "✅ Verificação concluída"
+                        : verifTipo == "erro" ? "Ops!"
+                        : "⚠️ Aviso")
+
+                    </strong>
+                    <div class="verif-msg">@verifMensagem</div>
+                </div>
+            }
+
+            <form class="modal-corpo"
+                  method="post"
+                  enctype="multipart/form-data"
+                  asp-controller="Home"
+                  asp-action="FazerVerificacao">
+              <label>
+                CNPJ <span class="obrigatorio">*</span>
+              <input type="text" name="cnpj" required/>
+              </label>
+              
+               <div class="campo">
+                    <label>
+                        Comprovante da instituição
+                        <span class="obrigatorio">*</span>
+                    </label>
+
+                    <label for="documentoInstituicao" class="file-input-fake">
+                        <span id="fileText">Selecionar arquivo</span>
+                    </label>
+
+                    <input type="file"
+                           id="documentoInstituicao"
+                           name="imagem"
+                           accept=".pdf,.png,.jpg,.jpeg"
+                           hidden>
+                </div>
+                <p>Se você não tem um documento oficial de sua intituição, acesse os links abaixo e solicite seu comprovante:</p>
+                <a href="https://www.gov.br/pt-br/servicos/qualificar-entidade-como-organizacao-da-sociedade-civil-de-interesse-publico" target="_blank">Ir para o Site da OSCIP <img src="~/style/assets/brasil.png" alt="Bandeira do Brasil" style="width: 20px; vertical-align: middle;" /></a>
+                <a href="https://www.gov.br/mds/pt-br/acoes-e-programas/suas/entidades-de-assistencia-social/certificacao-de-entidades-de-assistencia-social" target="_blank">
+                    Ir para o Site da CEBAS
+                    <img src="~/style/assets/brasil.png" alt="Bandeira do Brasil" style="width: 20px; vertical-align: middle;" />
+                    </a>
+            
+
+            <!-- ✅ RODAPÉ PADRÃO -->
+                <div class="modal-rodape">
+                    <a href="#" class="btn-cancelar">Cancelar</a>
+                    <button type="submit" class="btn-verde btn-registrar">
+                        Fazer a Verificação
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
 
   <!-- Modal (Registrar Campanha) — 
    abre:target (href="#modal-campanha") 
@@ -311,8 +391,8 @@
   </div>
 
 <script>
-
-document.addEventListener('DOMContentLoaded', function () {
+       
+   document.addEventListener('DOMContentLoaded', function () {
 
   /* Gráfico Circular */
   /* Desenha o gráfico na interface */
@@ -347,9 +427,47 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* Redirecionamento do logout */
-  window.redLogin = function () { window.location.href = 'login.html'; };
+  window.redLogin = function () 
+  {
+        window.location.href = '@Url.Action("Login", "Home")';              
+  };
+
 
 });
+
+const uploadArea = document.getElementById("uploadArea");
+const fileText = document.getElementById("fileText");
+
+document.getElementById("documentoInstituicao")
+    ?.addEventListener("change", function() {
+        const fileText = document.getElementById("fileText");
+        if (this.files.length > 0) {
+            fileText.textContent = this.files[0].name;
+            fileText.style.color = "#000";
+        }
+
+});
+
+function fecharVerifMsg(){
+    const overlay = document.getElementById("verifOverlay");
+    if (overlay) overlay.style.display = "none";
+
+    // opcional: fechar o modal também
+    // window.location.hash = "";
+}
+
+
+
+(function () {
+    const toast = document.getElementById("verifToast");
+    if (toast) {
+    setTimeout(() => {
+        toast.classList.add("hide");
+        setTimeout(() => toast.remove(), 450);
+    }, 5000); // tempo visível (ms)
+    }
+})();
+
 
 </script>
 </body>

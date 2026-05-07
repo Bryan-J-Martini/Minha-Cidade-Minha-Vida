@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using MCMV.Data;
 using MCMV.Logical;
 using MCMV.Models;
+using Microsoft.AspNetCore.Mvc;
+using Mysqlx.Expr;
 using System.Text.RegularExpressions;
 
 namespace MCMV.Controllers
@@ -11,12 +12,14 @@ namespace MCMV.Controllers
         private readonly LoginService _loginService;
         private readonly RegisterService _registerService;
         private readonly DonationService _donationService;
+        private readonly AlteracoesService _alteracoesService;
 
-        public HomeController(LoginService loginService, RegisterService registerService, DonationService donationService)
+        public HomeController(LoginService loginService, RegisterService registerService, DonationService donationService, AlteracoesService alteracoesService)
         {
             _loginService = loginService;
             _registerService = registerService;
             _donationService = donationService;
+            _alteracoesService = alteracoesService;
         }
 
         // --- LOGIN ---
@@ -47,22 +50,26 @@ namespace MCMV.Controllers
         }
 
         // --- CADASTRO ---
+
         [HttpGet]
         public IActionResult Cadastro() => View();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Cadastro(string user, string identific, bool isInstit, string email, string senha, string confirmarSenha, IFormFile documentoInstituicao)
         {
             // 1. Limpeza radical: remove tudo que não for número
             string docLimpo = new string(identific.Where(char.IsDigit).ToArray());
 
             // 2. Validação simplificada de tamanho (CPF=11, CNPJ=14)
-            if (docLimpo.Length != 11 && docLimpo.Length != 14)
+            if (ValidadoresService.ValidarDocumento(docLimpo) == false)
             {
                 ViewBag.Erro = "O documento deve ter 11 dígitos (CPF) ou 14 dígitos (CNPJ).";
                 return View("Cadastro");
             }
 
-            // 3. Forçar sempre como True (conforme solicitado)
-            bool instituicaoVerificada = true;
+            bool instituicaoVerificada = await ValidadoresService.VerificarInstituicao(docLimpo);
 
             // 4. Verificar duplicidade e salvar
             if (_registerService.UsuarioExiste(docLimpo))
@@ -80,7 +87,66 @@ namespace MCMV.Controllers
         // --- OUTRAS ROTAS ---
         public IActionResult IndexUsuario() => View();
 
+
+
+        //----Instituição----
+        [HttpGet]
         public IActionResult IndexInstituicao() => View();
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult FazerVerificacao(IFormFile imagem, string cnpj)
+        {
+            string cnpjlimpo = new string((cnpj ?? "").Where(char.IsDigit).ToArray());
+            string urlModal = Url.Action(nameof(IndexInstituicao), "Home") + "#modal-verificacao";
+
+            if (!ValidadoresService.ValidarDocumento(cnpjlimpo))
+            {
+                TempData["VerifTipo"] = "erro";
+                TempData["VerifMensagem"] = "CNPJ inválido";
+                return Redirect(urlModal);
+            }
+
+
+            //2) verifica se existe e se já está verificada
+            bool? jaVerificada = _alteracoesService.JaEstaVerificada(cnpjlimpo);
+
+            if (jaVerificada == null)
+            {
+                TempData["VerifTipo"] = "erro";
+                TempData["VerifMensagem"] = "CNPJ não encontrado/cadastrado.";
+                return Redirect(urlModal);
+            }
+
+            if (jaVerificada == true)
+            {
+                TempData["VerifTipo"] = "erro"; // ou "sucesso" se quiser um aviso verde
+                TempData["VerifMensagem"] = "Esta instituição já está verificada ✅";
+                return Redirect(urlModal);
+            }
+
+            if (imagem == null || imagem.Length == 0)
+            {
+                TempData["VerifTipo"] = "erro";
+                TempData["VerifMensagem"] = "Imagem não enviada";
+                return Redirect(urlModal);
+            }
+
+            bool ok = _alteracoesService.mudarValidacaoInstituicao(cnpjlimpo);
+
+            if (!ok)
+            {
+                TempData["VerifTipo"] = "erro";
+                TempData["VerifMensagem"] = "Não foi possível atualizar. Verifique se o CNPJ está cadastrado.";
+                return Redirect(urlModal);
+            }
+
+            TempData["VerifTipo"] = "sucesso";
+            TempData["VerifMensagem"] = "Agora sua Instituição trás mais confiança!";
+            return Redirect(urlModal);
+        }
+
 
         public IActionResult VerInstituicoes()
         {
