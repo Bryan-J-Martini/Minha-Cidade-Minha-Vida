@@ -16,6 +16,16 @@ namespace MCMV
             builder.Services.AddScoped<MCMV.Logical.RegisterService>();
             builder.Services.AddScoped<MCMV.Logical.DonationService>();
             builder.Services.AddScoped<MCMV.Logical.AlteracoesService>();
+            
+            //Para Session - guardar o Documento
+          builder.Services.AddDistributedMemoryCache();
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -30,6 +40,7 @@ namespace MCMV
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthorization();
 

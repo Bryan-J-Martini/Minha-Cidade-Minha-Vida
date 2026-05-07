@@ -2,6 +2,7 @@ using MCMV.Data;
 using MCMV.Logical;
 using MCMV.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Mysqlx.Expr;
 using System.Text.RegularExpressions;
 
@@ -42,6 +43,9 @@ namespace MCMV.Controllers
             if (valido)
             {
                 string tipo = _loginService.ObterTipoUsuario(docLimpo);
+                //aqui está o documento guardado na sessão
+                HttpContext.Session.SetString("Documento", docLimpo);
+
                 return tipo == "CPF" ? RedirectToAction("IndexUsuario") : RedirectToAction("IndexInstituicao");
             }
 
@@ -96,21 +100,28 @@ namespace MCMV.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult FazerVerificacao(IFormFile imagem, string cnpj)
+        public IActionResult FazerVerificacao(IFormFile imagem)
         {
-            string cnpjlimpo = new string((cnpj ?? "").Where(char.IsDigit).ToArray());
+            //string cnpjlimpo = new string((cnpj ?? "").Where(char.IsDigit).ToArray());
             string urlModal = Url.Action(nameof(IndexInstituicao), "Home") + "#modal-verificacao";
+            var docSessao = HttpContext.Session.GetString("Documento");
 
-            if (!ValidadoresService.ValidarDocumento(cnpjlimpo))
+            if(string.IsNullOrWhiteSpace(docSessao))
+                return RedirectToAction("Login");
+
+
+            string cnpj = new string(docSessao.Where(char.IsDigit).ToArray());
+
+            if (cnpj.Length != 14)
             {
                 TempData["VerifTipo"] = "erro";
-                TempData["VerifMensagem"] = "CNPJ inválido";
+                TempData["VerifMensagem"] = "Apenas instituições (CNPJ) podem se verificar.";
                 return Redirect(urlModal);
             }
 
 
             //2) verifica se existe e se já está verificada
-            bool? jaVerificada = _alteracoesService.JaEstaVerificada(cnpjlimpo);
+            bool? jaVerificada = _alteracoesService.JaEstaVerificada(cnpj);
 
             if (jaVerificada == null)
             {
@@ -121,7 +132,7 @@ namespace MCMV.Controllers
 
             if (jaVerificada == true)
             {
-                TempData["VerifTipo"] = "erro"; // ou "sucesso" se quiser um aviso verde
+                TempData["VerifTipo"] = "aviso"; 
                 TempData["VerifMensagem"] = "Esta instituição já está verificada ✅";
                 return Redirect(urlModal);
             }
@@ -133,7 +144,7 @@ namespace MCMV.Controllers
                 return Redirect(urlModal);
             }
 
-            bool ok = _alteracoesService.mudarValidacaoInstituicao(cnpjlimpo);
+            bool ok = _alteracoesService.mudarValidacaoInstituicao(cnpj);
 
             if (!ok)
             {
@@ -142,8 +153,10 @@ namespace MCMV.Controllers
                 return Redirect(urlModal);
             }
 
-            TempData["VerifTipo"] = "sucesso";
-            TempData["VerifMensagem"] = "Agora sua Instituição trás mais confiança!";
+
+            TempData["VerifTipo"] = ok ? "sucesso" : "erro";
+            TempData["VerifMensagem"] = ok ? "Verificação realizada com sucesso!" : "Não foi possível atualizar a verificação.";
+
             return Redirect(urlModal);
         }
 
@@ -183,5 +196,16 @@ namespace MCMV.Controllers
             }
             return View("FacaUmaDoacao", doacao);
         }
+
+        //Saindo da Sessão
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
+        }
+
     }
 }

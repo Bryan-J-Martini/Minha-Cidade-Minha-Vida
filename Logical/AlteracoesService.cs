@@ -59,7 +59,7 @@ namespace MCMV.Logical
                     {
                         cmd.Parameters.AddWithValue("@cnpj", cnpj);
 
-                        var result = cmd.ExecuteScalar(); // ✅ certo para SELECT único valor
+                        object? result = cmd.ExecuteScalar();
 
                         if (result == null || result == DBNull.Value)
                             return null; // não achou o CNPJ

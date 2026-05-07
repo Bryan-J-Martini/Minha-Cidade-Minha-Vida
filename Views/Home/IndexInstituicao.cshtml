@@ -27,7 +27,13 @@
     </div>
 
     <!-- Botão Logout-->
-        <button id="btnLogout" type="button" onclick="redLogin()" class="btn-logout" asp-controller="Home" asp-action="Login">➜</button>
+        
+        <form asp-controller="Home" asp-action="Logout" method="post" class="logout-form" aria-label="Sair">
+            <button class= "btn-logout">
+            ➜</button>
+        </form>
+
+
     
   </header>
 
@@ -173,11 +179,6 @@
                   enctype="multipart/form-data"
                   asp-controller="Home"
                   asp-action="FazerVerificacao">
-              <label>
-                CNPJ <span class="obrigatorio">*</span>
-              <input type="text" name="cnpj" required/>
-              </label>
-              
                <div class="campo">
                     <label>
                         Comprovante da instituição
@@ -192,7 +193,7 @@
                            id="documentoInstituicao"
                            name="imagem"
                            accept=".pdf,.png,.jpg,.jpeg"
-                           hidden>
+                           hidden required>
                 </div>
                 <p>Se você não tem um documento oficial de sua intituição, acesse os links abaixo e solicite seu comprovante:</p>
                 <a href="https://www.gov.br/pt-br/servicos/qualificar-entidade-como-organizacao-da-sociedade-civil-de-interesse-publico" target="_blank">Ir para o Site da OSCIP <img src="~/style/assets/brasil.png" alt="Bandeira do Brasil" style="width: 20px; vertical-align: middle;" /></a>
@@ -447,16 +448,6 @@ document.getElementById("documentoInstituicao")
         }
 
 });
-
-function fecharVerifMsg(){
-    const overlay = document.getElementById("verifOverlay");
-    if (overlay) overlay.style.display = "none";
-
-    // opcional: fechar o modal também
-    // window.location.hash = "";
-}
-
-
 
 (function () {
     const toast = document.getElementById("verifToast");
