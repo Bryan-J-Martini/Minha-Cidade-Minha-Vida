@@ -1,6 +1,8 @@
 using MCMV.Data;
 using MCMV.Logical;
 using MCMV.Models;
+using MySql.Data.MySqlClient;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Mysqlx.Expr;
@@ -12,17 +14,21 @@ namespace MCMV.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly LocalizacaoService _localizacaoService;
         private readonly LoginService _loginService;
         private readonly RegisterService _registerService;
         private readonly DonationService _donationService;
         private readonly AlteracoesService _alteracoesService;
 
-        public HomeController(LoginService loginService, RegisterService registerService, DonationService donationService, AlteracoesService alteracoesService)
+        public HomeController(LoginService loginService, RegisterService registerService, DonationService donationService, AlteracoesService alteracoesService, LocalizacaoService mapaService)
         {
             _loginService = loginService;
             _registerService = registerService;
             _donationService = donationService;
             _alteracoesService = alteracoesService;
+            _localizacaoService = mapaService;
+
+
         }
 
         // --- LOGIN ---
@@ -283,6 +289,16 @@ namespace MCMV.Controllers
                 })
             });
         }
+
+        //Mapa IndexUser
+
+        [HttpGet]
+        public async Task<IActionResult> MapaCampanhas()
+        {
+            var dados = await _localizacaoService.ObterCampanhasNoMapaAsync();
+            return Json(dados);
+        }
+
 
         //Saindo da Sessão
 

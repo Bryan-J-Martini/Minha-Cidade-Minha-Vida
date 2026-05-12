@@ -4,6 +4,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+
 <div class="content-wrapper">
     <div class="info-section">
         <h2 class="title-green">Você Sabia?</h2>
@@ -26,10 +30,44 @@
         </div>
     </div>
 
+    
+    
     <div class="map-placeholder">
-        <h3 class="map-title">Encontre uma instituição perto de você!</h3>
+        <h3 class="map-title">Encontre uma Campanha perto de você!</h3>
+
         <div class="map-box">
-            <p>[MAPA CARREGANDO]</p>
+            <div id="map"></div>
         </div>
     </div>
+
+
+
 </div>
+
+<!-- ✅ 1️⃣ Leaflet JS PRIMEIRO -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- ✅ 2️⃣ Depois, seu código -->
+<script>
+    const map = L.map('map').setView([-22.41, -47.56], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    fetch('/Home/MapaCampanhas')
+    .then(res => res.json())
+    .then(pontos => {
+    pontos.forEach(p => {
+    L.marker([p.lat, p.lng])
+    .addTo(map)
+    .bindPopup(`<strong>${p.nome}</strong>
+    
+    <div class="popup-endereco">
+    ${p.bairro}
+    </div>
+    `);
+    });
+    });
+</script>
+

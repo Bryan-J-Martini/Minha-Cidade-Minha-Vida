@@ -54,8 +54,8 @@
 /* Estilo do Card do Mapa */
 .map-placeholder {
     background-color: #d3d3d3;
-    width: 450px;
-    padding: 40px;
+    width: 600px;
+    padding: 20px;
     border-radius: 30px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -70,10 +70,14 @@
 
 .map-box {
     background-color: #bbb;
-    height: 250px;
+    height: 380px;
     border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden; /* MUITO IMPORTANTE */
     border: 2px dashed #999;
+}
+
+/* Leaflet precisa ocupar tudo */
+#map {
+    width: 100%;
+    height: 100%;
 }
