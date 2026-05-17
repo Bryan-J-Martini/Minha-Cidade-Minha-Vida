@@ -10,8 +10,6 @@ namespace MCMV.Logical
         private readonly string _connectionString;
 
         private readonly Database _db;
-
-        // Construtor: O ASP.NET vai entregar o Database configurado aqui
         public RegisterService(Database db, IConfiguration configuration)
         {
             _db = db;
@@ -57,28 +55,25 @@ namespace MCMV.Logical
         public List<UserViewModel> ListarInstituicoes()
         {
             var lista = new List<UserViewModel>();
+            using var conn = new MySqlConnection(_connectionString);
+            conn.Open();
 
-            using (var conn = _db.GetConnection())
+            string sql = @"SELECT usuario, documento, email, verificaInst 
+                   FROM user_tb 
+                   WHERE LENGTH(documento) > 11 
+                   ORDER BY verificaInst DESC, usuario ASC";
+
+            using var cmd = new MySqlCommand(sql, conn);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
             {
-                conn.Open();
-
-                const string sql = "SELECT usuario, documento FROM user_tb WHERE LENGTH(documento) = 14";
-
-                using (var cmd = new MySqlCommand(sql, conn))
+                lista.Add(new UserViewModel
                 {
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            lista.Add(new UserViewModel
-                            {
-                                // Certifique-se que os nomes aqui batem com o SELECT
-                                Nome = reader["usuario"].ToString() ?? "",
-                                Documento = reader["documento"].ToString() ?? ""
-                            });
-                        }
-                    }
-                }
+                    Nome = reader.GetString(0),
+                    Documento = reader.GetString(1),
+                    Email = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                    IsVerificada = reader.GetInt32(3) == 1
+                });
             }
             return lista;
         }
@@ -158,5 +153,22 @@ namespace MCMV.Logical
             }
             return lista;
         }
+
+        public MeusDadosViewModel ObterResumoUsuario(string documentoUsuario)
+        {
+            var resumo = new MeusDadosViewModel();
+            using (var con = _db.GetConnection())
+            {
+                con.Open();
+
+                string sqlEnviadas = "SELECT COUNT(*) FROM doacoes_tb WHERE documento_doador = @doc";
+                string sqlEspontaneas = "SELECT COUNT(*) FROM doacoes_tb WHERE documento_doador = @doc AND id_campanha IS NULL";
+                string sqlInst = "SELECT DISTINCT instituicao FROM doacoes_tb WHERE documento_doador = @doc OR documento_recebedor = @doc";
+            }
+            return resumo;
+        }
+
+
+
     }
 }

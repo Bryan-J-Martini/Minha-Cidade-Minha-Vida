@@ -5,41 +5,43 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-pesquisa">
-    @* Barra de Pesquisa Estilizada *@
-    <div class="search-bar-container">
-        <div class="search-bar">
-            <input type="text" id="inputPesquisa" placeholder="Pesquisar Instituição" />
-            <button type="button" class="search-icon">
-                <i class="fas fa-search"></i> @* Certifique-se de ter FontAwesome ou use uma 🔍 *@
-                🔍
-            </button>
+<div class="container">
+    @* Barra de Pesquisa *@
+    <div style="display: flex; justify-content: center; margin: 30px 0;">
+        <div class="search-bar" style="background-color: #00a878; border-radius: 25px; padding: 10px 20px; width: 60%; display: flex; align-items: center;">
+            <input type="text" id="inputPesquisa" placeholder="Pesquisar Instituição" style="background: transparent; border: none; color: white; width: 100%; outline: none;">
+            <span style="color: white;">🔍</span>
         </div>
     </div>
 
-    @* Grid de Instituições *@
-    <div class="instituicoes-grid">
+    @* Listagem Dinâmica *@
+    <div id="listaInstituicoes" style="padding: 0 50px;">
         @if (Model != null && Model.Any())
         {
-            @foreach (var inst in Model)
+            foreach (var inst in Model)
             {
-                <div class="instituicao-item">
-                    <p class="inst-nome"><strong>@inst.Nome</strong></p>
-                    <p>CNPJ: @inst.Documento</p>
-                    <div class="inst-detalhes">
-                        <span>Bairro: ---</span>
-                        <span>Avaliação: 5/5</span>
-                    </div>
-                    <div class="inst-endereco">
-                        <span>Rua: ---</span>
-                        <span>Nº: ---</span>
-                    </div>
+                <div class="inst-card-item" style="border-bottom: 1px solid #eee; padding: 15px;">
+
+                    <h4 class="nome-inst" style="color: #00A878; display: flex; align-items: center; gap: 8px; margin: 0 0 5px 0;">
+                        @inst.Nome
+
+                        @if (inst.IsVerificada)
+                        {
+                            <span title="Instituição Verificada" style="background-color: #1DA1F2; color: white; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-family: sans-serif; font-weight: bold; border: 1px solid #1DA1F2;">
+                                ✓
+                            </span>
+                        }
+                    </h4>
+                    <p style="margin: 2px 0;">CNPJ: @inst.Documento</p>
+                    <p style="margin: 2px 0; font-size: 0.9rem; color: #00A878;">
+                        📧 @inst.Email
+                    </p>
                 </div>
             }
         }
         else
         {
-            <p>Nenhuma instituição encontrada.</p>
+            <p style="text-align: center; color: #999;">Nenhuma instituição encontrada.</p>
         }
     </div>
 </div>
@@ -53,7 +55,7 @@
     }
 
     .search-bar {
-        background-color: #00C08B; /* Verde do seu protótipo */
+        background-color: #00C08B;
         border-radius: 50px;
         padding: 10px 30px;
         display: flex;
@@ -62,18 +64,18 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
-    .search-bar input {
-        background: transparent;
-        border: none;
-        color: white;
-        font-size: 20px;
-        width: 100%;
-        outline: none;
-    }
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 20px;
+            width: 100%;
+            outline: none;
+        }
 
-    .search-bar input::placeholder {
-        color: rgba(255,255,255,0.8);
-    }
+            .search-bar input::placeholder {
+                color: rgba(255,255,255,0.8);
+            }
 
     .search-icon {
         background: transparent;
@@ -83,10 +85,10 @@
         cursor: pointer;
     }
 
-    /* Grid de 4 Colunas como na imagem */
+    /* Grid de 4 Colunas */
     .instituicoes-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr); /* 4 colunas iguais */
+        grid-template-columns: repeat(4, 1fr);
         gap: 30px;
         padding: 20px;
         max-width: 1200px;
@@ -109,5 +111,25 @@
         display: flex;
         justify-content: space-between;
     }
-
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('inputPesquisa');
+        const itens = document.getElementsByClassName('inst-card-item');
+
+        input.addEventListener('input', function () {
+            const termo = input.value.toLowerCase().trim();
+
+            Array.from(itens).forEach(function (item) {
+                const conteudo = item.textContent.toLowerCase();
+
+                if (conteudo.includes(termo)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>

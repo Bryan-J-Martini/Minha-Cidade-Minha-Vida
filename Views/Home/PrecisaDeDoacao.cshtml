@@ -5,6 +5,10 @@
 }
 
 <style>
+    .form-container * {
+        box-sizing: border-box;
+    }
+
     .form-container {
         display: flex;
         flex-direction: column;
@@ -13,44 +17,87 @@
         padding: 50px;
         background-color: #e0e0e0;
         border-radius: 40px;
-        width: 50%;
+        width: 600px;
         margin: 50px auto;
         text-align: center;
     }
-    .form-group { width: 100%; margin-bottom: 15px; }
-    .form-group input, .form-group select {
+
+    form {
         width: 100%;
-        padding: 15px;
-        border-radius: 30px;
-        border: none;
-        background-color: #00a878;
-        color: white;
-        font-weight: bold;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
-    .form-group input::placeholder { color: white; opacity: 0.8; }
+
+    .form-group {
+        width: 85%;
+        margin-bottom: 15px;
+    }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border-radius: 30px;
+            border: none;
+            background-color: #00a878;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            height: 50px;
+        }
+
+        .form-group select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg%20xmlns="http://www.w3.org/2000/svg"%20width="292.4"%20height="292.4"><path%20fill="white"%20d="M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            background-size: 12px;
+        }
+
+        .form-group input::placeholder {
+            color: white;
+            opacity: 0.8;
+        }
+
     .btn-submit {
         background-color: #00a878;
         color: white;
         border: none;
-        padding: 15px 40px;
+        padding: 12px 60px;
         border-radius: 30px;
         cursor: pointer;
         font-weight: bold;
+        margin-top: 10px;
+        transition: background-color 0.3s;
     }
+
+        .btn-submit:hover {
+            background-color: #008f66;
+        }
 </style>
 
 <div class="form-container">
     <h3>Preencha as informações abaixo para concluir sua solicitação:</h3>
+
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div id="alertaSucesso" class="alert alert-success text-center" style="background-color: #d4edda; color: #155724; border-color: #c3e6cb; padding: 10px; margin-bottom: 15px; border-radius: 4px; width: 85%;">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
     
-    <form asp-action="EnviarSolicitacao" method="post">
+    <form asp-action="EnviarSolicitacao" asp-controller="Doacao" method="post">
         <div class="form-group">
-            <input asp-for="Instituicao" placeholder="Instituição:" />
+            <input asp-for="NomeUser" placeholder="Seu Nome:" required />
         </div>
         <div class="form-group">
-            <input asp-for="DescricaoNecessidade" placeholder="Do que precisa:" />
+            <input asp-for="DescricaoNecessidade" placeholder="O que precisa:" required />
         </div>
         <div class="form-group">
-            <select asp-for="NivelUrgencia">
+            <select asp-for="NivelUrgencia" required>
                 <option value="">Nível de urgência:</option>
                 <option value="Baixo">Baixo</option>
                 <option value="Médio">Médio</option>
@@ -58,12 +105,30 @@
             </select>
         </div>
         <div class="form-group">
-            <input asp-for="PreferenciaContato" placeholder="Preferência de contato:" />
+            <select asp-for="Contato" required>
+                <option value="">Preferência de contato:</option>
+                <option value="Telefone">Telefone</option>
+                <option value="Whatsapp">Whatsapp</option>
+                <option value="Email">E-mail</option>
+            </select>
         </div>
         <button type="submit" class="btn-submit">ENVIAR</button>
     </form>
 </div>
 
-<p style="text-align: center; color: #00a878; font-weight: bold;">
-    *Sua solicitação será analisada pela instituição, e você receberá o retorno por e-mail
-</p>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var alerta = document.getElementById("alertaSucesso");
+            if (alerta) {
+                setTimeout(function () {
+                    alerta.style.transition = "opacity 0.5s ease";
+                    alerta.style.opacity = "0";
+                    setTimeout(function () {
+                        alerta.remove();
+                    }, 500); // Remove do HTML após sumir o efeito
+                }, 4000); // Aguarda 4 segundos (4000ms)
+            }
+        });
+    </script>
+}

@@ -1,0 +1,122 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Portal da Transparência";
+}
+
+<style>
+    .portal-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: sans-serif;
+    }
+
+    /* Barra de Pesquisa */
+    .search-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 50px;
+    }
+
+    .search-bar {
+        background-color: #00a878;
+        color: white;
+        border-radius: 50px;
+        padding: 12px 30px;
+        width: 500px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: white;
+            outline: none;
+            width: 90%;
+        }
+
+            .search-bar input::placeholder {
+                color: rgba(255,255,255,0.8);
+            }
+
+    /* Lista de Instituições */
+    .inst-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+    }
+
+    .inst-info, .inst-stats {
+        flex: 1;
+    }
+
+        .inst-info p, .inst-stats p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+    .inst-title {
+        font-weight: bold;
+        font-size: 1.05rem;
+    }
+
+    .inst-stats {
+        text-align: left;
+        padding-left: 50px;
+    }
+</style>
+
+
+@model List<MCMV.Models.InstituicaoTransparencia>
+
+<div class="portal-container" style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #00a878; text-align: center; margin-bottom: 30px;">Portal da Transparência</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div style="text-align: center; margin-top: 50px; color: #666;">
+            <p>Nenhuma instituição verificada encontrada para exibir no momento.</p>
+        </div>
+    }
+    else
+    {
+        foreach (var inst in Model)
+        {
+            <div class="instituicao-card" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 10px; border-bottom: 1px solid #eee;">
+                
+                @* Lado Esquerdo: Idêntico à aba Ver Instituições, incluindo o selinho azul nativo *@
+                <div class="info-esquerda" style="text-align: left;">
+                    <h4 class="nome-inst" style="color: #00A878; display: flex; align-items: center; gap: 8px; margin: 0 0 5px 0; font-size: 1.1rem; font-weight: bold;">
+                        @inst.Nome
+                        
+                        <span title="Instituição Verificada" style="background-color: #1DA1F2; color: white; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-family: sans-serif; font-weight: bold; border: 1px solid #1DA1F2;">
+                            ✓
+                        </span>
+                    </h4>
+                    <p style="margin: 2px 0; color: #333; font-family: sans-serif; font-size: 14px;">CNPJ: @inst.Documento</p>
+                    <p style="margin: 2px 0; font-size: 0.9rem; color: #00A878; font-family: sans-serif;">
+                        📧 @inst.Email
+                    </p>
+                </div>
+                
+                @* Lado Direito: Valores arrecadados *@
+                <div class="info-direita" style="text-align: right; min-width: 250px; font-family: sans-serif; font-size: 15px;">
+                    <p style="margin: 4px 0; color: #00A878; font-weight: bold;">
+                        Total arrecadado: @inst.TotalArrecadado.ToString("C")
+                    </p>
+                    <p style="margin: 4px 0; color: #00A878;">
+                        Itens arrecadados: @inst.TotalItensRecebidos.ToString("D7")
+                    </p>
+                </div>
+
+            </div>
+        }
+    }
+</div>

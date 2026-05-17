@@ -51,7 +51,7 @@ namespace MCMV.Controllers
             if (valido)
             {
                 string tipo = _loginService.ObterTipoUsuario(docLimpo);
-                //aqui está o documento guardado na sessão
+
                 HttpContext.Session.SetString("Documento", docLimpo);
 
                 return tipo == "CPF" ? RedirectToAction("IndexUsuario") : RedirectToAction("IndexInstituicao");
@@ -71,7 +71,7 @@ namespace MCMV.Controllers
 
         public async Task<IActionResult> Cadastro(string user, string identific, bool isInstit, string email, string senha, string confirmarSenha, IFormFile documentoInstituicao)
         {
-            // 1. Limpeza radical: remove tudo que não for número
+            // 1.Remove tudo que não for número
             string docLimpo = new string(identific.Where(char.IsDigit).ToArray());
 
             // 2. Validação simplificada de tamanho (CPF=11, CNPJ=14)
@@ -83,7 +83,7 @@ namespace MCMV.Controllers
 
             bool instituicaoVerificada = await ValidadoresService.VerificarInstituicao(docLimpo);
 
-            // 4. Verificar duplicidade e salvar
+            // 3. Verificar duplicidade e salvar
             if (_registerService.UsuarioExiste(docLimpo))
             {
                 ViewBag.Erro = "Este CPF ou CNPJ já está cadastrado.";
@@ -117,7 +117,6 @@ namespace MCMV.Controllers
             // Enviamos a lista para a View
             return View(campanhas);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -204,17 +203,28 @@ namespace MCMV.Controllers
         }
 
         [HttpGet]
-        public IActionResult FacaUmaDoacao() => View();
+        public IActionResult FacaUmaDoacao()
+        {
+            var instituicoes = _registerService.ListarInstituicoes() as List<MCMV.Models.UserViewModel>
+                               ?? _registerService.ListarInstituicoes();
+
+            ViewBag.Instituicoes = instituicoes;
+
+            return View();
+        }
 
         [HttpPost]
         public IActionResult EnviarDoacao(FazerUmaDoacao doacao)
         {
             if (ModelState.IsValid)
             {
-                _donationService.SalvarOfertaDoacao(doacao);
+                string documentoLogado = HttpContext.Session.GetString("Documento") ?? "000000";
+                _donationService.SalvarOfertaDoacao(doacao, documentoLogado);
+
                 TempData["MensagemSucesso"] = "Oferta de doação enviada com sucesso!";
                 return RedirectToAction("IndexUsuario");
             }
+
             return View("FacaUmaDoacao", doacao);
         }
 
@@ -245,7 +255,6 @@ namespace MCMV.Controllers
                 DocumentoInstituicao = instDoc
             };
 
-            // Criar lista de categorias (Sempre adiciona a 1, as outras se preenchidas)
             var listaCategorias = new List<CategoriaCampanhaModel>();
             listaCategorias.Add(new CategoriaCampanhaModel { Nome = cat1_nome, Meta = cat1_meta, Unidade = cat1_unidade });
 
@@ -290,15 +299,32 @@ namespace MCMV.Controllers
             });
         }
 
-        //Mapa IndexUser
+        
 
-        [HttpGet]
-        public async Task<IActionResult> MapaCampanhas()
+        //Aba Meus Dados
+        public IActionResult MeusDados()
         {
-            var dados = await _localizacaoService.ObterCampanhasNoMapaAsync();
-            return Json(dados);
+            // 1. Buscamos o documento usando a chave correta: "Documento"
+            string documentoLogado = HttpContext.Session.GetString("Documento");
+
+            // 2. Se a sessão expirou ou não gravou, ele volta pro login
+            if (string.IsNullOrEmpty(documentoLogado))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var resumo = _donationService.ObterResumoUsuario(documentoLogado);
+
+            // 3. Retornamos a View passando esse objeto
+            return View(resumo);
         }
 
+        //Aba Portal Transparência
+        public IActionResult PortalTransparencia()
+        {
+            var dados = _donationService.ObterDadosPortal();
+            return View(dados); 
+        }
 
         //Saindo da Sessão
 
