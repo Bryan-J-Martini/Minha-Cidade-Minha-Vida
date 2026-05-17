@@ -99,8 +99,6 @@ namespace MCMV.Logical
             }
             catch
             {
-                // Em caso de erro na API (timeout ou fora do ar), você decide se barra 
-                // ou se permite o cadastro. Aqui retornaremos false para segurança.
                 return false;
             }
         }

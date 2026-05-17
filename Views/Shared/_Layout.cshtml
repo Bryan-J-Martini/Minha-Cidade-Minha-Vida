@@ -131,8 +131,17 @@
                     Faça uma doação
                 </a>
 
-                @* Portal (Link fixo) *@
-                <a href="#">Portal da transparência</a>
+                @* Meus Dados *@
+                <a asp-controller="Home" asp-action="MeusDados"
+                       class="@(actionAtual == "MeusDados" ? "active-link" : "")">
+                    Meus dados
+                </a>
+
+                @* Portal da Transparência com link funcional *@
+                <a asp-controller="Home" asp-action="PortalTransparencia"
+                       class="@(actionAtual == "PortalTransparencia" ? "active-link" : "")">
+                    Portal da transparência
+                </a>
         
                 @* DICA: Adicione um link de Sair para testar o deslogue *@
                 <a asp-controller="Home" asp-action="Login">Sair</a>

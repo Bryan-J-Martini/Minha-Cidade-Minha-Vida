@@ -6,6 +6,10 @@
 }
 
 <style>
+    .form-container-doar * {
+        box-sizing: border-box;
+    }
+
     .form-container-doar {
         display: flex;
         flex-direction: column;
@@ -18,39 +22,215 @@
         text-align: center;
     }
 
+    /* Estilização da mensagem de sucesso com transição suave */
+    .alerta-sucesso {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        padding: 10px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        width: 85%;
+        font-weight: 500;
+        font-size: 15px;
+        margin-left: auto;
+        margin-right: auto;
+        transition: opacity 0.5s ease-out;
+        opacity: 1;
+    }
+
     .campo-form {
         background-color: #00A878;
         color: white;
         border-radius: 25px;
         padding: 12px 20px;
         margin-bottom: 15px;
-        width: 80%;
+        width: 85%;
         border: none;
         font-weight: bold;
+        font-size: 16px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
     }
 
-        .campo-form::placeholder {
-            color: rgba(255,255,255,0.8);
+    select.campo-form {
+        height: 45px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,<svg%20xmlns="http://www.w3.org/2000/svg"%20width="292.4"%20height="292.4"><path%20fill="white"%20d="M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 20px center;
+        background-size: 12px;
+    }
+
+    .campo-campanha {
+        background-color: #00A878;
+        color: white;
+        border-radius: 25px;
+        padding: 0 20px;
+        margin-bottom: 15px;
+        width: 85%;
+        height: 45px;
+        border: none;
+        font-weight: bold;
+        font-size: 16px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 20px center;
+    }
+
+    .campo-form::placeholder {
+        color: rgba(255,255,255,0.8);
+    }
+
+    .form-group-radio {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    .radio-option {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        color: #333;
+        font-weight: bold;
+        position: relative;
+        padding-left: 30px;
+    }
+
+        .radio-option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
         }
+
+    .radio-mark {
+        position: absolute;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: white;
+        border: 2px solid #00A878;
+        border-radius: 50%;
+    }
+
+    .radio-option input:checked ~ .radio-mark {
+        background-color: #00A878;
+    }
+
+    .radio-mark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 5px;
+        top: 5px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: white;
+    }
+
+    .radio-option input:checked ~ .radio-mark:after {
+        display: block;
+    }
 
     .btn-enviar-doar {
         background-color: #00A878;
         color: white;
         border: none;
-        padding: 10px 40px;
-        border-radius: 20px;
+        padding: 12px 60px;
+        border-radius: 25px;
         font-weight: bold;
         cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s;
     }
+    
+        .btn-enviar-doar:hover {
+            background-color: #008f66;
+        }
+
+    .input-doacao {
+        background-color: #00a878;
+        border: none;
+        border-radius: 25px;
+        padding: 12px 20px;
+        color: white;
+        width: 85%;
+        outline: none;
+        font-size: 16px;
+        box-sizing: border-box;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .input-doacao::placeholder {
+            color: rgba(255, 255, 255, 0.9);
+        }
 </style>
 
 <div class="form-container-doar">
     <h2>Preencha as informações abaixo para concluir sua solicitação:</h2>
 
-    <form asp-controller="Home" asp-action="EnviarDoacao" method="post" style="width: 100%;">
-        <input asp-for="Instituicao" class="campo-form" placeholder="Instituição:" />
+    @* Bloco da mensagem com ID para controle do JavaScript *@
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div id="mensagem-sucesso" class="alerta-sucesso">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+   
+    <form asp-controller="Doacao" asp-action="EnviarDoacao" method="post" style="width: 100%;">
+    <div style="margin: 20px 0; width: 100%;">
+        <input list="instituicoes-list"
+               id="inputInstituicao"
+               asp-for="Instituicao"
+               placeholder="Selecione ou digite a Instituição..."
+               class="input-doacao"
+               autocomplete="off">
+
+        <datalist id="instituicoes-list">
+            @if (ViewBag.Instituicoes != null)
+            {
+                foreach (var inst in ViewBag.Instituicoes)
+                {
+                    <option value="@inst.Nome"></option>
+                }
+            }
+        </datalist>
+    </div>
         
-        <input asp-for="OQueDesejaDoar" class="campo-form" placeholder="O que deseja doar:" />
+        <div class="form-group-radio">
+            <label class="radio-option">
+                <input type="radio" name="TipoDoacao" value="Item" checked onclick="alternarCampo(this.value)">
+                <span class="radio-mark"></span>
+                Doar Item
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="TipoDoacao" value="Dinheiro" onclick="alternarCampo(this.value)">
+                <span class="radio-mark"></span>
+                Doar Dinheiro
+            </label>
+        </div>
+
+        <input asp-for="OQueDesejaDoar" id="campoDoacao" class="campo-form" placeholder="O que deseja doar:" />
+
+        <select id="selectCampanha" asp-for="Campanha" class="campo-campanha">
+            <option value="">Campanha</option>
+        </select>
         
         <select asp-for="EstadoItem" class="campo-form">
             <option value="">Estado do item:</option>
@@ -59,12 +239,72 @@
             <option value="Usado (Bom estado)">Usado (Bom estado)</option>
         </select>
 
-        <input asp-for="PreferenciaContato" class="campo-form" placeholder="Preferência de contato:" />
+        <select asp-for="Contato" class="campo-form">
+            <option value="">Preferência de contato:</option>
+            <option value="Telefone">Telefone</option>
+            <option value="Whatsapp">Whatsapp</option>
+            <option value="Email">E-mail</option>
+        </select>
 
         <button type="submit" class="btn-enviar-doar">ENVIAR</button>
     </form>
-</div>
 
-<p style="color: #00A878; font-weight: bold; text-align: center;">
-    *Sua solicitação será analisada pela instituição, e você receberá o retorno por e-mail
-</p>
+    <script>
+            function alternarCampo(tipo) {
+                const campo = document.getElementById('campoDoacao');
+                if (tipo === 'Dinheiro') {
+                    campo.placeholder = "Valor da doação (R$):";
+                } else {
+                    campo.placeholder = "O que deseja doar:";
+                }
+            }
+
+            // SCRIPT PARA DESAPARECER A MENSAGEM APÓS 4 SEGUNDOS
+            document.addEventListener('DOMContentLoaded', function () {
+                const msg = document.getElementById('mensagem-sucesso');
+                if (msg) {
+                    setTimeout(function () {
+                        msg.style.opacity = '0'; // Efeito fade-out suave
+                        setTimeout(function () {
+                            msg.style.display = 'none'; // Remove o espaço ocupado da tela
+                        }, 500); // Meio segundo após começar o sumiço
+                    }, 4000); // 4 segundos ativa o timer
+                }
+            });
+    </script>
+
+    <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const inputInst = document.getElementById('inputInstituicao');
+                const selectCamp = document.getElementById('selectCampanha');
+
+                if (!inputInst || !selectCamp) return;
+
+                inputInst.addEventListener('change', function () {
+                    const nomeInst = inputInst.value.trim();
+
+                    selectCamp.innerHTML = '<option value="">Doação Avulsa</option>';
+
+                    if (nomeInst === '') return;
+
+                    fetch(`/Doacao/BuscarCampanhasPorInstituicao?nomeInstituicao=${encodeURIComponent(nomeInst)}`)
+                        .then(response => response.json())
+                        .then(dados => {
+                            if (dados && dados.length > 0) {
+                                dados.forEach(campanha => {
+                                    const option = document.createElement('option');
+                                    const nomeCampanha = campanha.nome || campanha.Nome;
+                    
+                                    if (nomeCampanha) {
+                                        option.value = nomeCampanha;
+                                        option.textContent = nomeCampanha;
+                                        selectCamp.appendChild(option);
+                                    }
+                                });
+                            }
+                        })
+                        .catch(erro => console.error('Erro ao buscar campanhas:', erro));
+                });
+            });
+    </script>
+</div>

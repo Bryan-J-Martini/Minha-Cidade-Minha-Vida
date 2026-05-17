@@ -20,7 +20,7 @@
         public int CampanhaId { get; set; }
         public string Nome { get; set; }
         public int Meta { get; set; }
-        public int Atual { get; set; } // Adicione esta linha
+        public int Atual { get; set; } 
         public string Unidade { get; set; }
     }
 }

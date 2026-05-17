@@ -1,0 +1,120 @@
+﻿@model MCMV.Models.MeusDadosViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Meus Dados";
+}
+
+<style>
+    .meus-dados-container {
+        display: flex;
+        justify-content: center;
+        padding: 50px 0;
+    }
+
+    .card-verde {
+        background-color: #00a878;
+        border-radius: 50px;
+        padding: 60px;
+        width: 600px; /* Largura fixa para manter a proporção */
+        display: flex;
+        flex-direction: column;
+        gap: 25px; /* Espaço entre as linhas */
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between; /* Texto na esquerda, caixa na direita */
+        align-items: center;
+        color: white;
+        font-family: sans-serif;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .valor-box {
+        background-color: white;
+        color: #00a878;
+        border-radius: 25px;
+        width: 250px; /* Largura da pílula branca */
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 20px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .lista-inst {
+        height: auto;
+        min-height: 50px;
+        max-height: 150px;
+        overflow-y: auto;
+        flex-direction: column;
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+        .lista-inst ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .lista-inst li {
+            border-bottom: 1px solid #eee;
+            padding: 5px 0;
+        }
+
+            .lista-inst li:last-child {
+                border-bottom: none;
+            }
+</style>
+
+<div class="meus-dados-container">
+    <div class="card-verde">
+        
+        <div class="info-row">
+            <span>Doações solicitadas:</span>
+            <div class="valor-box">@Model.DoacoesSolicitadas</div>
+        </div>
+
+        <div class="info-row">
+            <span>Doações enviadas:</span>
+            <div class="valor-box">@Model.DoacoesEnviadas</div>
+        </div>
+
+        <div class="info-row">
+            <span>Campanhas participadas:</span>
+            <div class="valor-box">@Model.CampanhasParticipadas</div>
+        </div>
+
+
+        <div class="info-row">
+            <span>Doações espontâneas:</span>
+            <div class="valor-box">@Model.DoacoesEspontaneas</div>
+        </div>
+
+        <div class="info-row">
+            <span>Instituições contatadas:</span>
+            <div class="valor-box lista-inst">
+                @if (Model.InstituicoesContatadas != null && Model.InstituicoesContatadas.Any())
+                {
+                    <ul>
+                        @foreach (var inst in Model.InstituicoesContatadas)
+                        {
+                            <li>@inst</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span>Nenhuma até o momento</span>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
