@@ -38,7 +38,7 @@ Abaixo estão listadas as tabelas que estruturam a aplicação:
 * `solicitacaodoacao`: Registra os pedidos formais de doação emitidos pelas entidades ou usuários.
 * `fazerumadoacao`: Controla o histórico e o fluxo das doações efetivamente realizadas pelos usuários através da plataforma.
 
-![Estrutura das Tabelas - DER](img/estrutura_banco.png)
+![Estrutura das Tabelas - DER](img/der.png)
 
 ---
 
