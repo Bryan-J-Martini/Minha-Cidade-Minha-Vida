@@ -226,18 +226,22 @@
             </label>
         </div>
 
-        <input asp-for="OQueDesejaDoar" id="campoDoacao" class="campo-form" placeholder="O que deseja doar:" />
+        <input asp-for="OQueDesejaDoar" id="campoDoacao" class="campo-form" placeholder="Quantidade:" />
 
         <select id="selectCampanha" asp-for="Campanha" class="campo-campanha">
             <option value="">Campanha</option>
         </select>
         
-        <select asp-for="EstadoItem" class="campo-form">
-            <option value="">Estado do item:</option>
-            <option value="Novo">Novo</option>
-            <option value="Seminovo">Seminovo</option>
-            <option value="Usado (Bom estado)">Usado (Bom estado)</option>
-        </select>
+        <div id="divCategoriaItem">
+            <select asp-for="EstadoItem" class="campo-form">
+                <option value="Dinheiro">Categoria de item:</option>
+                <option value="Roupas">Roupas</option>
+                <option value="Alimentos">Alimentos</option>
+                <option value="Produtos_de_limpeza">Produtos de Limpeza</option>
+                <option value="Produtos_de_higiene">Produtos de Higiene</option>
+                <option value="Brinquedos">Brinquedos</option>
+            </select>
+        </div>
 
         <select asp-for="Contato" class="campo-form">
             <option value="">Preferência de contato:</option>
@@ -252,10 +256,18 @@
     <script>
             function alternarCampo(tipo) {
                 const campo = document.getElementById('campoDoacao');
+                const divCategoria = document.getElementById('divCategoriaItem');
+                const selectCategoria = document.querySelector('[name="EstadoItem"]');
                 if (tipo === 'Dinheiro') {
                     campo.placeholder = "Valor da doação (R$):";
+                    divCategoria.style.display = 'none';
+                    if (selectCategoria) {
+                        selectCategoria.value = 'Dinheiro';
+                    }
+
                 } else {
-                    campo.placeholder = "O que deseja doar:";
+                    campo.placeholder = "Quantidade da Doação:";
+                     divCategoria.style.display = 'block';
                 }
             }
 

@@ -1,31 +1,47 @@
-﻿let graficoProgresso;
+﻿const CORES = ['#c62828', '#991c8f', '#ffd937'];
 
-function renderizarGrafico(porcentagem) {
+let graficoProgresso;
+
+async function carregarProgresso(campanhaId) {
+    try {
+        const res = await fetch(`/Home/ObterProgressoCampanha?id=${campanhaId}`);
+        const dados = await res.json();
+
+        renderizarGrafico(dados.porcentagemGeral, dados.categorias);
+        renderizarCategorias(dados.categorias);
+    } catch (err) {
+        console.error("Erro ao carregar progresso:", err);
+    }
+}
+
+function renderizarGrafico(porcentagem, categorias) {
     const canvas = document.getElementById('graficoCampanha');
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     document.getElementById('total-porcentagem').innerText = porcentagem + "%";
 
-    // Destruir gráfico anterior se existir para evitar sobreposição
-    if (graficoProgresso) {
-        graficoProgresso.destroy();
-    }
+    if (graficoProgresso) graficoProgresso.destroy();
+
+    const dados = categorias.map(c => c.porcentagem);
+    const pendente = Math.max(0, 100 - dados.reduce((a, b) => a + b, 0));
+    const cores = categorias.map((_, i) => CORES[i]);
 
     graficoProgresso = new Chart(ctx, {
         type: 'doughnut',
         data: {
+            labels: [...categorias.map(c => c.nome), 'Pendente'],
             datasets: [{
-                data: [porcentagem, 100 - porcentagem],
-                backgroundColor: ['#18b07c', '#f3b5b5'], // Verde Concluído / Rosa Pendente
+                data: [...dados, pendente],
+                backgroundColor: [...cores, '#f3ffd0'],
                 borderWidth: 0,
                 hoverOffset: 0
             }]
         },
         options: {
-            cutout: '80%', // Deixa o anel mais fino para o número caber no meio
+            cutout: '70%',
             responsive: true,
-            maintainAspectRatio: false, // CRÍTICO: faz o gráfico respeitar o tamanho do container CSS
+            maintainAspectRatio: false,
             plugins: {
                 tooltip: { enabled: false },
                 legend: { display: false }
@@ -34,43 +50,75 @@ function renderizarGrafico(porcentagem) {
     });
 }
 
-// Função para garantir que o gráfico carregue ao mudar o select E ao abrir a página
+function renderizarCategorias(categorias) {
+    const lista = document.getElementById('listaCategorias');
+    if (!lista) return;
+
+    lista.innerHTML = categorias.map((cat, i) => `
+        <div class="categoria-item" style="margin-bottom: 12px;">
+            <div class="categoria-info" style="display: flex; justify-content: space-between; margin-bottom: 4px; padding: 12px;">
+                <span style="font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: ${CORES[i]}; display: inline-block;"></span>
+                    ${cat.nome}
+                </span>
+                <span style="font-size: 12px; color: #778899;">${cat.atual}/${cat.meta} ${cat.unidade} · ${cat.porcentagem}%</span>
+            </div>
+            <div style="background: #f3ffd0; border-radius: 4px; height: 8px; width: 100%; overflow: hidden;">
+                <div style="height: 100%; border-radius: 4px; background: ${CORES[i]}; width: ${Math.min(cat.porcentagem, 100)}%;"></div>
+            </div>
+        </div>
+    `).join('');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    const btnTeste = document.getElementById('btnTestarGrafico');
+    const select = document.getElementById('selectCampanha');
 
-    btnTeste?.addEventListener('click', function () {
-        // 1. Dados de exemplo para simular conclusão
-        const dadosSimulados = [
-            { nome: "Alimentos", porcentagem: 100, atual: 50, meta: 50, unidade: "KG" },
-            { nome: "Roupas", porcentagem: 100, atual: 20, meta: 20, unidade: "UNI" }
-        ];
-
-        // 2. Tenta chamar as funções do seu arquivo ProgressoCampanha.js
-        if (typeof renderizarGrafico === "function") {
-            renderizarGrafico(100);
-
-            // Simula a criação manual das barras caso renderizarCategorias não exista
-            const lista = document.getElementById('listaCategorias');
-            if (lista) {
-                lista.innerHTML = ""; // Limpa atual
-                dadosSimulados.forEach(cat => {
-                    lista.innerHTML += `
-                        <div class="categoria-item">
-                            <div class="categoria-info">
-                                <span>${cat.nome}</span>
-                                <span>${cat.porcentagem}%</span>
-                            </div>
-                            <div class="barra-progresso">
-                                <div class="barra-preenchimento" style="width: 100%; background-color: #18b07c;"></div>
-                            </div>
-                            <p class="meta-texto">${cat.atual}/${cat.meta} ${cat.unidade}</p>
-                        </div>
-                    `;
-                });
-            }
-            console.log("Simulação de 100% aplicada com sucesso.");
+    select?.addEventListener('change', function () {
+        const id = this.value;
+        if (id) {
+            carregarProgresso(id);
         } else {
-            console.error("Função renderizarGrafico não encontrada. Verifique se o ProgressoCampanha.js foi carregado corretamente.");
+            renderizarGrafico(0, []);
+            document.getElementById('listaCategorias').innerHTML = '';
         }
     });
 });
+
+
+
+
+async function carregarHistoricoDoacoes() {
+    const lista = document.getElementById('listaDoacoes');
+    if (!lista) return;
+
+    try {
+        const res = await fetch('/Home/ObterHistoricoDoacoes');
+        const doacoes = await res.json();
+
+        if (!doacoes.length) {
+            lista.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Nenhuma doação recebida ainda.</p>';
+            return;
+        }
+
+        lista.innerHTML = doacoes.map(d => {
+            const unidadeTexto = d.unidade ? ` ${d.unidade}` : '';
+            const itemTexto = d.item ? ` ${d.item}` : '';
+            const linhaCampanha = d.campanha ? `<strong>Campanha: </strong> ${d.campanha}` : `Doação avulsa`;
+
+            return `
+        <div class="doacao">
+            <div class="doacao-id"><strong>CPF:  </strong>   ${d.documentoDoador}</div>
+            <div class="doacao-info">
+                <strong>QTD:</strong> ${d.quantidade}${unidadeTexto}<br><strong>Categoria: </strong> ${itemTexto}<br>
+                ${linhaCampanha}
+            </div>
+        </div>
+    `;
+        }).join('');
+    } catch (err) {
+        console.error("Erro ao carregar histórico de doações:", err);
+        lista.innerHTML = '<p style="text-align:center;color:#c01d36;padding:20px;">Erro ao carregar histórico.</p>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', carregarHistoricoDoacoes);
