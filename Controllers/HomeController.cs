@@ -228,6 +228,31 @@ namespace MCMV.Controllers
             return View("FacaUmaDoacao", doacao);
         }
 
+
+
+
+        [HttpGet]
+        public IActionResult ObterHistoricoDoacoes()
+        {
+            string? instDoc = HttpContext.Session.GetString("Documento");
+            if (string.IsNullOrEmpty(instDoc))
+                return Json(new List<object>());
+
+            var historico = _donationService.ListarHistoricoDoacoes(instDoc);
+
+            return Json(historico.Select(h => new
+            {
+                documentoDoador = h.DocumentoDoador,
+                quantidade = h.Quantidade,
+                item = h.Item,
+                unidade = h.Unidade,
+                campanha = h.Campanha
+            }));
+        }
+
+
+
+
         [HttpPost]
         public IActionResult RegistrarCampanha(
             string nomeDaCampanha, string rua, string cep, string numeroEnderec, string bairro,
@@ -283,8 +308,9 @@ namespace MCMV.Controllers
 
             // 2. Calcula o total geral para o gráfico em anel
             double metaTotal = categorias.Sum(c => c.Meta);
-            double atualTotal = categorias.Sum(c => c.Atual);
+double atualTotal = categorias.Sum(c => Math.Min(c.Atual, c.Meta));
             double porcentagemGeral = metaTotal > 0 ? (atualTotal / metaTotal) * 100 : 0;
+            porcentagemGeral = Math.Min(porcentagemGeral, 100);
 
             return Json(new
             {

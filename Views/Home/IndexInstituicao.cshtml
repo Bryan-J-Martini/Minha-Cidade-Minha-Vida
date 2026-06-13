@@ -75,19 +75,8 @@
                     <div class="coluna-total">
                         <p><strong>Total Geral</strong></p>
                         <div class="graficoTotal-container">
-                            <canvas id="graficoCampanha"></canvas>
+                            <canvas id="graficoCampanha" style="margin-top: 15px;"></canvas>
                             <span class="porcentagemTotal-numero" id="total-porcentagem">0%</span>
-                        </div>
-
-                        <div class="Legenda">
-                            <span><span class="LegendaProgresso Concluido"></span> Concluído</span>
-                            <span><span class="LegendaProgresso Pendente"></span> Pendente</span>
-                        </div>
-
-                        <div style="margin-top: 15px;">
-                            <button type="button" id="btnTestarGrafico" class="btn-Modal" style="background: #333; font-size: 11px; padding: 5px 10px; width: 100%;">
-                                Simular 100% (Teste)
-                            </button>
                         </div>
                     </div>
 
@@ -141,44 +130,6 @@
                 </div>
             </div>
 
-            <div class="card doacoes-recebidas" style="padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; box-sizing: border-box;">
-                <h2 style="font-size: 23px; color: #333; margin-bottom: 5px;">Doações recebidas</h2>
-                <p class="subtitulo" style="font-size: 13px; color: #778899; margin-bottom: 25px;">Registro de doações espontâneas, e por campanhas</p>
-          
-                <div style="display: flex; justify-content: space-around; align-items: center; width: 100%;">
-              
-                    <div style="display: flex; flex-direction: column; gap: 15px;">
-                        <div style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #555;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="width: 12px; height: 12px; background-color: #4372f1; border-radius: 50%; display: inline-block;"></span> Campanhas
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="width: 12px; height: 12px; background-color: #333333; border-radius: 50%; display: inline-block;"></span> Espontâneas
-                            </div>
-                        </div>
-                        <div style="width: 140px; height: 140px;">
-                            <canvas id="graficoPizzaDoacoesRecebidas"></canvas>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 15px; min-width: 200px;">
-                        <div style="background-color: #4372f1; color: white; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: bold; width: max-content;">
-                            Referente: 05/2026
-                        </div>
-                  
-                        <div style="text-align: left;">
-                            <p style="font-size: 14px; font-weight: bold; margin-bottom: 6px; color: #333;">Itens Recebidos:</p>
-                            <ul style="font-size: 13px; color: #555; padding-left: 18px; margin: 0; line-height: 1.6;">
-                                <li>Material de limpeza;</li>
-                                <li>Alimentos;</li>
-                                <li>Itens de higiene;</li>
-                                <li>Roupas;</li>
-                                <li>Calçados;</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div class="card historico-doacoes">
                 <h2>Histórico de doações</h2>
@@ -186,7 +137,48 @@
                 <div class="scroll-doacoes" id="listaDoacoes"></div>
             </div>
 
+                <div class="card doacoes-recebidas" style="padding: 24px; margin-top: -24px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; box-sizing: border-box;">
+                    <h2 style="font-size: 23px; color: #333; margin-bottom: 5px;">Doações recebidas</h2>
+                    <p class="subtitulo" style="font-size: 13px; color: #778899; margin-bottom: 25px;">Registro de doações espontâneas, e por campanhas</p>
+          
+                    <div style="display: flex; justify-content: space-around; align-items: center; width: 100%;">
+   
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #555;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="width: 12px; height: 12px; background-color: #f1ad0c; border-radius: 50%; display: inline-block;"></span> Campanhas
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="width: 12px; height: 12px; background-color: #fff59c; border-radius: 50%; display: inline-block;"></span> Espontâneas
+                                </div>
+                            </div>
+                            <div style="width: 140px; height: 140px;">
+                                <canvas id="graficoPizzaDoacoesRecebidas"></canvas>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 15px; min-width: 200px;">
+                            <div style="background-color: #f1ad0c; color: white; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: bold; width: max-content;">
+                                Referente: 05/2026
+                            </div>
+       
+                            <div style="text-align: left;">
+                                <p style="font-size: 14px; font-weight: bold; margin-bottom: 6px; color: #333;">Itens Recebidos:</p>
+                                <ul style="font-size: 13px; color: #555; padding-left: 18px; margin: 0; line-height: 1.6;">
+                                    <li>Material de limpeza;</li>
+                                    <li>Alimentos;</li>
+                                    <li>Itens de higiene;</li>
+                                    <li>Roupas;</li>
+                                    <li>Calçados;</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
         </div>
+
+          
 
     </main>
  
@@ -286,7 +278,7 @@
                         </div>
                         <div class="campo pequeno">
                             <label>Unidade</label>
-                            <select name="cat1_unidade"><option>UNI</option><option>KG</option><option>L</option><option>CX</option></select>
+                                <select name="cat1_unidade"><option>UNI</option><option>KG</option><option>L</option><option>CX</option><option>R$</option></select>
                         </div>
                     </div>
 
@@ -301,7 +293,7 @@
                         </div>
                         <div class="campo pequeno">
                             <label>Unidade</label>
-                            <select name="cat2_unidade"><option>UNI</option><option>KG</option><option>L</option><option>CX</option></select>
+                                <select name="cat2_unidade"><option>UNI</option><option>KG</option><option>L</option><option>CX</option><option>R$</option></select>
                         </div>
                     </div>
 
@@ -316,7 +308,7 @@
                         </div>
                         <div class="campo pequeno">
                             <label>Unidade</label>
-                            <select name="cat3_unidade"><option>UNI</option><option>KG</option><option>L</option><option>CX</option></select>
+                                <select name="cat3_unidade"><option>UNI</option><option>KG</option><option>L</option><option>CX</option><option>R$</option></select>
                         </div>
                     </div>
                 </div>
@@ -382,34 +374,34 @@
             })();
     </script>
 
+        <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                const ctxPizza = document.getElementById('graficoPizzaDoacoesRecebidas');
+                if (ctxPizza) {
+                new Chart(ctxPizza, {
+                type: 'pie',
+                data: {
+                labels: ['Campanhas', 'Espontâneas'],
+                datasets: [{
+                data: [70, 30], // Valores fictícios para o teste inicial
+                backgroundColor: ['#f1ad0c', '#fff59c'],
+                borderWidth: 1
+                }]
+                },
+                options: {
+                responsive: true,
+                plugins: {
+                legend: {
+                display: false
+                }
+                }
+                }
+                });
+                }
+                });
+        </script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="~/js/ProgressoCampanha.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        const ctxPizza = document.getElementById('graficoPizzaDoacoesRecebidas');
-        if (ctxPizza) {
-        new Chart(ctxPizza, {
-        type: 'pie',
-        data: {
-        labels: ['Campanhas', 'Espontâneas'],
-        datasets: [{
-        data: [70, 30], // Valores fictícios para o teste inicial
-        backgroundColor: ['#4372f1', '#333333'],
-        borderWidth: 1
-        }]
-        },
-        options: {
-        responsive: true,
-        plugins: {
-        legend: {
-        display: false 
-        }
-        }
-        }
-        });
-        }
-        });
-    </script>
 </body>
 </html>
